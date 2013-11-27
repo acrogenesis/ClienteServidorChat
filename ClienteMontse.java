@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
+import java.net.*;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -35,9 +35,21 @@ public class ClienteMontse {
 	JScrollPane scroll = null;
 	JPanel contenedor_areachat = null;
 	
+	
+	//conexión con socket 
+	DatagramSocket yo = null;		// Socket del cliente para comunicarse con el servidor
+	InetAddress dirServidor = null;	// Dirección IP del servidor
+	DatagramPacket paquete;	
+	final int PUERTO = 9000; //puerto para DM
+	
+	
+	ServerSocket socketDM = null;
 	Socket socket = null;
 	BufferedReader lector = null;
 	PrintWriter escritor = null;
+	
+	//Sesion
+	String nickname = null;
 	
 	public ClienteMontse (){
 		
@@ -84,26 +96,33 @@ public class ClienteMontse {
 		ventana_chat.setResizable(false);
 		ventana_chat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		Thread principal = new Thread(new Runnable(){
-			public void run(){
-				try{
-				socket = new Socket("localhost",9000);
-				leer();
-				escribir();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-				
-			}
-			
-		});
+		changeNick();
 		
-		principal.start();
 		
 	}
 	
+	/*public void iniciar(){
+		
+		// Dirección IP del servidor
+		try{
+			   dirServidor = InetAddress.getByName(args[0]); // Obtener la dirección del servidor dada en forma de parámetro
+			}catch(UnknownHostException e){
+			       System.out.println(e.getMessage());
+			       System.exit(1);
+			}	
+			
+		//Socket para comunicación con servidor	
+		try{
+			     yo = new DatagramSocket();
+			}catch(SocketException e){
+			     System.out.println(e.getMessage());
+			     System.exit(1);
+			}
+		
+	}*/
+	
 	//leer mensajes que llegan
-	public void leer(){
+	/*public void leer(){
 		Thread leer_hilo = new Thread(new Runnable(){
 			public void run(){
 				
@@ -123,37 +142,63 @@ public class ClienteMontse {
 		});
 		
 		leer_hilo.start(); //para ponerse a leer	
-	}
+	}*/
 	
-	public void escribir(){
-		Thread escribir_hilo = new Thread(new Runnable(){
-			public void run(){
-				try{
+	public void changeNick()
+	{
+		
+		btn_change.addActionListener(new ActionListener()
+		{
+			
+			public void actionPerformed(ActionEvent e)
+			{
+				
+				if(txt_nick.getText() != null)
+				{
 					
+					nickname = txt_nick.getText();
+					System.out.println(nickname);
 					
-					escritor = new PrintWriter(socket.getOutputStream(), true);
-					btn_enviar.addActionListener(new ActionListener(){public void actionPerformed(ActionEvent e){
-						
-						String enviar_mensaje = txt_mensaje.getText();
-						escritor.println(enviar_mensaje);
-						txt_mensaje.setText("");
-						
-					}});
-					//si no pones true no permite enviar mensajes
-				}catch(Exception e){
-					e.printStackTrace();
 				}
 			}
 			
 		});
-		escribir_hilo.start();
-		
 	}
-  String appendNickname(String nick, String message){
-    String newmessage;
-    newmessage = nick + "π" + "message";
-    return newmessage;
-  }
+	
+	/*public void escribir(){
+
+				try{
+
+					escritor = new PrintWriter(socket.getOutputStream(), true);
+					
+					btn_enviar.addActionListener(new ActionListener()
+					{
+						public void actionPerformed(ActionEvent e){
+							
+							//si el mensaje no es un direct message 
+							if(txt_ip_dm.getText() == null && txt_ip_dm.getText() == ""){
+								
+								String text = txt_mensaje.getText();
+								String mensaje = appendNickname()
+								escritor.println(enviar_mensaje);
+								txt_mensaje.setText("");
+							}
+						}
+					});
+					//si no pones true no permite enviar mensajes
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+		
+	}*/
+  
+
+	String appendNickname(String nick, String message){
+    
+		String newmessage;
+    	newmessage = nick + "π" + "message";
+    	return newmessage;
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
