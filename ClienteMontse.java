@@ -149,6 +149,11 @@ public class ClienteMontse {
 		escribir_hilo.start();
 		
 	}
+  String appendNickname(String nick, String message){
+    String newmessage;
+    newmessage = nick + "π" + "message";
+    return newmessage;
+  }
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
