@@ -18,12 +18,22 @@ import javax.swing.JTextField;
 public class ClienteMontse {
 	
 	JFrame ventana_chat=null;
+	
+	//enviar mensaje
 	JButton btn_enviar = null;
 	JTextField txt_mensaje = null;
-	JTextArea area_chat = null;
-	JPanel contenedor_areachat = null;
+	JTextField txt_ip_dm = null;
 	JPanel contenedor_btntxt= null;
+	
+	//cambiar nick 
+	JTextField txt_nick = null;
+	JButton btn_change = null;
+	JPanel contenedor_btnNick = null;
+	
+	//Area de Mensajes del chat 
+	JTextArea area_chat = null;
 	JScrollPane scroll = null;
+	JPanel contenedor_areachat = null;
 	
 	Socket socket = null;
 	BufferedReader lector = null;
@@ -35,23 +45,41 @@ public class ClienteMontse {
 	}
 	
 	public void hacerInterfaz(){
+		//JFRAME
 		ventana_chat = new JFrame("Cliente");
-		btn_enviar = new JButton("Enviar");
-		txt_mensaje = new JTextField();
-		area_chat = new JTextArea(10,12); //10 filas, 12 columna
+		
+		//ver mensajes
+		area_chat = new JTextArea(25,12); //10 filas, 12 columna
 		area_chat.setEditable(false);
 		scroll = new JScrollPane(area_chat);
 		contenedor_areachat = new JPanel(); //constructor
 		contenedor_areachat.setLayout(new GridLayout(1,1)); //un layout de una fila por columna (nada mas cabe una columna
 		contenedor_areachat.add(scroll);
+		
+		//escribir mensaje
+		txt_mensaje = new JTextField();
+		txt_ip_dm = new JTextField();
+		btn_enviar = new JButton("Enviar"); // boton enviar 
 		contenedor_btntxt = new JPanel();
-		contenedor_btntxt.setLayout(new GridLayout(1,2));
+		contenedor_btntxt.setLayout(new GridLayout(1,3));
 		contenedor_btntxt.add(txt_mensaje);
+		contenedor_btntxt.add(txt_ip_dm);
 		contenedor_btntxt.add(btn_enviar);
+		
+		//cambiar nick
+		txt_nick = new JTextField();
+		btn_change = new JButton("Cambiar");
+		contenedor_btnNick = new JPanel();
+		contenedor_btnNick.setLayout(new GridLayout(1,2));
+		contenedor_btnNick.add(txt_nick);
+		contenedor_btnNick.add(btn_change);
+		
+		//ventana 
 		ventana_chat.setLayout(new BorderLayout());
 		ventana_chat.add(contenedor_areachat, BorderLayout.NORTH);
-		ventana_chat.add(contenedor_btntxt, BorderLayout.SOUTH);
-		ventana_chat.setSize(300, 220);
+		ventana_chat.add(contenedor_btntxt, BorderLayout.CENTER);
+		ventana_chat.add(contenedor_btnNick, BorderLayout.SOUTH);
+		ventana_chat.setSize(500, 500);
 		ventana_chat.setVisible(true);
 		ventana_chat.setResizable(false);
 		ventana_chat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
