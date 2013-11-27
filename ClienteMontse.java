@@ -29,7 +29,7 @@ public class ClienteMontse {
 	BufferedReader lector = null;
 	PrintWriter escritor = null;
 	
-	public Cliente (){
+	public ClienteMontse (){
 		
 		hacerInterfaz();
 	}

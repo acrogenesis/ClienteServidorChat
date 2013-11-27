@@ -33,7 +33,7 @@ public class ServidorMontse {
 	PrintWriter escritor = null;
 	
 	
-	public Servidor(){
+	public ServidorMontse(){
 		
 		hacerInterfaz();
 	}
