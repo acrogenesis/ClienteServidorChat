@@ -59,6 +59,15 @@ public class Servidor{
     return message;
   }
 
+  public static void sendMessage(DatagramSocket yo, DatagramPacket paquete){
+    try{
+      yo.send(paquete);
+    }catch(IOException e){
+      System.out.println(e.getMessage());
+      System.exit(1);
+    }
+  }
+
 
   public static void main(String[] args){
     DatagramSocket yo = null; // Socket del servidor para recibir datagramas
@@ -134,13 +143,15 @@ public class Servidor{
       for(int i = 0; i < usuarios.size(); i++){
         Clientes userARecibir = (Clientes)usuarios.get(i);
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
-
-        try{
-          yo.send(paquete);
-        }catch(IOException e){
-          System.out.println(e.getMessage());
-          System.exit(1);
-        }
+        sendMessage(yo,paquete);
+        /*
+         *try{
+         *  yo.send(paquete);
+         *}catch(IOException e){
+         *  System.out.println(e.getMessage());
+         *  System.exit(1);
+         *}
+         */
       }
     }
   //yo.close();
