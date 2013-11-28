@@ -59,8 +59,11 @@ public class Servidor{
     return message;
   }
 
-  public static void sendMessage(DatagramSocket yo, byte[] buffer){
+  public static void sendMessage(DatagramSocket yo, String aMandar){
     DatagramPacket paquete;
+    byte[] buffer;
+    buffer = new byte[80]; // Crear el arreglo de bytes que almacenará el string a transmitir
+    buffer = aMandar.getBytes();     // Transformamos el string a arreglo de bytes
     for(int i = 0; i < usuarios.size(); i++){
         Clientes userARecibir = (Clientes)usuarios.get(i);
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
@@ -139,13 +142,9 @@ public class Servidor{
 
       //aMandar = new String(recibido.toUpperCase()); // Transformamos a mayúsculas el string recibido
       aMandar = parseMessage(recibido, dirCliente.toString());
-      buffer = new byte[80]; // Crear el arreglo de bytes que almacenará el string a transmitir
-      buffer = aMandar.getBytes();      // Transformamos el string a arreglo de bytes
-      // Llenamos el paquete con los bytes a enviar y el destino (dirIP y puerto)
 
       //un for para enviar paquete a todos los usuarios conectados
-      
-      sendMessage(yo, buffer);
+      sendMessage(yo, aMandar);
       /*
        *try{
        *  yo.send(paquete);
