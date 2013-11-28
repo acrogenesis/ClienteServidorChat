@@ -134,8 +134,9 @@ public class Cliente {
 	
 	System.out.println(todo);
 	byte[] bufferSend = new byte[100];
-	bufferSend = message.getBytes();
-	DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
+	bufferSend = todo.getBytes();
+	DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);
+	System.out.println(new String(paq.getData()));
 
 	        try{
 	          yo.send(paq);

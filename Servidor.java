@@ -168,7 +168,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
       recibido = new String(paquete.getData()).trim(); // Extraer los datos recibidos y transformalos a String
       dirCliente = paquete.getAddress();// Obtener la dirección del cliente
       puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
-
+		System.out.println(recibido);
 	//checar si es paquete de registro
 	if(recibido.startsWith(".registrar")){
 		
@@ -216,7 +216,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 		System.out.println("Usuarios de chat " + usuarios.size()+ "\n");
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
-
+		System.out.println(recibido);
 		if(recibido.matches(".dm")) //es un mensaje privado
 		{   System.out.println("privado");
 			String[] info = recibido.split(" ");
