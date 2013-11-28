@@ -144,15 +144,6 @@ public class Servidor{
 
       //un for para enviar paquete a todos los usuarios conectados
       sendMessage(yo, aMandar);
-      /*
-       *try{
-       *  yo.send(paquete);
-       *}catch(IOException e){
-       *  System.out.println(e.getMessage());
-       *  System.exit(1);
-       *}
-       */
-    
     }
   //yo.close();
   }
