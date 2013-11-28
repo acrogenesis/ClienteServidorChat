@@ -102,7 +102,6 @@ public class Cliente {
 			
 			
 			public static void enviarMensajeServidor(){
-				
 				btn_enviar.addActionListener(new ActionListener(){
 					
 						public void actionPerformed(ActionEvent e)
@@ -139,6 +138,12 @@ public class Cliente {
 		//conexión con socket 
 		DatagramPacket paquete;	
 		byte [] buffer;
+    try{
+       if (args[0] == ""){}
+    }catch (Exception e){
+      System.out.println("Olvidaste especificar la ip del servidor");
+      System.exit(1);
+    }
 		
 				
 		conectar();
