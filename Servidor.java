@@ -14,6 +14,7 @@ class Clientes{
   private String nickname;
   private InetAddress dir;
   private int puerto;
+  public boolean status;
 
   public Clientes(){
 
@@ -29,6 +30,11 @@ class Clientes{
   public void setPuerto(int d){
     puerto = d;
   }
+
+  public void setStatus(boolean s){
+	
+	status = s;
+}
   public String getNickname(){
     return nickname;
   }
@@ -39,6 +45,10 @@ class Clientes{
   public int getPuerto(){
     return puerto;
   }
+
+  public boolean status{
+	return status;
+	}	
 }
 
 public class Servidor{
@@ -74,7 +84,7 @@ public class Servidor{
     for(int i = 0; i < usuarios.size(); i++){
       Clientes userARecibir = usuarios.get(i);
       //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
-      if(userARecibir.getNickname() != niki){
+      if(userARecibir.getNickname() != niki && userARecibir.getStatus()){
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
       try{
         yo.send(paquete);
@@ -138,9 +148,10 @@ public class Servidor{
 			c.setInetAddress(dirCliente);
 			c.setPuerto(puertoCliente);
 			c.setNickname(info[1]);
+			c.setStatus(true);
 			usuarios.add(c);
 			System.out.println("Se agrego al usuario " + info[1] + " " + c.getDir().toString());
-			String registrado = "Bienvenido al Chat" + info[1];
+			String registrado = "Bienvenido al Chat " + info[1];
 			byte [] register = new byte[100];
 			register = registrado.getBytes();
 			DatagramPacket registro = new DatagramPacket(register, register.length, dirCliente, puertoCliente);
@@ -153,9 +164,23 @@ public class Servidor{
 			sendMessage(yo, "Usuario " + info[1] + " inicio sesion", info[1]);
 			
 		}
+		else{
+			String _noRegistro = "Nickname ya existe!! [Da clic a conectar y escoge otro]."
+			byte[] _noRegister = new byte[100];
+			_noRegister = _noRegistro.getBytes();
+			DatagramPacket _noPaquete = new DatagramPacket(_noRegister _noRegister.length, dirCliente, puertoCliente);
+			try{
+							yo.send(_noPaquete);
+			}catch(IOException ex){
+							System.out.println(ex.getMessage());
+							System.exit(1);
+			}
+			
+		}
 		
 		System.out.println(usuarios.size() + "\n");
 	}else{
+		System.out.println("Usuarios de chat " + usuarios.size()+ "\n");
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
 

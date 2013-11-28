@@ -123,6 +123,24 @@ public class Cliente {
         //}
   }
 
+ public static void enviarMensajePrivado(){
+	
+	String enviar = txt_mensaje.getText();
+	String message = nickname+"π"+enviar;
+	String _aQuien = txt_ip_dm.getText();
+	String todo = "dm "+ _aQuien + " " + message;
+	byte[] bufferSend = new byte[100];
+	bufferSend = message.getBytes();
+	DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
+
+	        try{
+	          yo.send(paq);
+	        }catch(IOException ex){
+	          System.out.println(ex.getMessage());
+	          System.exit(1);
+	        }
+}
+
   public static void main(String[] args) {
 
     new Cliente();
@@ -174,7 +192,7 @@ public class Cliente {
 						System.out.println(ex.getMessage());
 						System.exit(1);
 			}
-			}
+		}
 
     String message="";
     while(true){
@@ -187,6 +205,15 @@ public class Cliente {
         });
       }
       txt_mensaje.setText("");
+
+	 if(txt_mensaje.getText().toString() != "" && txt_ip_dm.getText().toString() != "")
+	{
+		btn_enviar.addActionListener(new ActionListener(){
+		          public void actionPerformed(ActionEvent e){
+		            enviarMensajePrivado();
+		          }
+		  });
+	}
 
       //recibir paquete
       try{
