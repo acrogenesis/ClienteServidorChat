@@ -38,6 +38,8 @@ public class Cliente {
   static InetAddress dirServidor = null; // Dirección IP del servidor
   static final int PUERTO = 5000; //puerto para con servidor
 
+  static boolean wait = true;
+
   public Cliente(){
     hacerInterfaz();
   }
@@ -67,8 +69,8 @@ public class Cliente {
     btn_enviar = new JButton("Enviar"); // boton enviar
     contenedor_btntxt = new JPanel();
     contenedor_btntxt.setLayout(new GridLayout(1,3));
-    contenedor_btntxt.add(txt_mensaje);
     contenedor_btntxt.add(txt_ip_dm);
+    contenedor_btntxt.add(txt_mensaje);
     contenedor_btntxt.add(btn_enviar);
 
     //ventana
@@ -94,39 +96,32 @@ public class Cliente {
           connect = false;
         }
           connect = true;
+          System.out.println("Conectando con el nickname: " + nickname);
+          wait = false;
       }
 
     });
 
   }
-
 
   public static void enviarMensajeServidor(){
-    btn_enviar.addActionListener(new ActionListener(){
+            //if(txt_mensaje.getText() != "" && txt_ip_dm.getText() == ""){
+        String enviar = txt_mensaje.getText();
+        String message = nickname+"π"+enviar;
+        byte[] bufferSend = new byte[100];
+        bufferSend = message.getBytes();
+        DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
 
-      public void actionPerformed(ActionEvent e)
-      {
-        if(txt_mensaje != null && txt_ip_dm == null){
-
-          String enviar = txt_mensaje.getText();
-          String message = nickname+"π"+enviar;
-          byte[] bufferSend = new byte[80];
-          bufferSend = message.getBytes();
-          DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
-
-          try{
-            yo.send(paq);
-          }catch(IOException ex){
-            System.out.println(ex.getMessage());
-            System.exit(1);
-          }
+        try{
+          yo.send(paq);
+        }catch(IOException ex){
+          System.out.println(ex.getMessage());
+          System.exit(1);
         }
-      }
-    });
-
+       //
+       // txt_ip_dm.setText("");
+        //}
   }
-
-
 
   public static void main(String[] args) {
 
@@ -136,6 +131,7 @@ public class Cliente {
     //conexión con socket 
     DatagramPacket paquete;	
     byte [] buffer;
+    byte [] bufferR;
     try{
        if (args[0] == ""){}
     }catch (Exception e){
@@ -146,38 +142,50 @@ public class Cliente {
 
     conectar();
 
-    if(connect){
-      // Dirección IP del servidor 
-      try{
-            dirServidor = InetAddress.getByName(args[0]); // Obtener la dirección del servidor dada en forma de parámetro
-      }catch(UnknownHostException ex){
-              System.out.println(ex.getMessage());
-              System.exit(1);
+    while (wait && !connect){
+      System.out.println("Waiting for nickname");
+    }
+
+    // Dirección IP del servidor
+    try{
+      dirServidor = InetAddress.getByName(args[0]); // Obtener la dirección del servidor dada en forma de parámetro
+    }catch(UnknownHostException ex){
+      System.out.println(ex.getMessage());
+      System.exit(1);
+    }
+    System.out.println("Intendando conectarse a " + dirServidor.toString()+ " con el nickname " +nickname);
+    // Crear socket para comunicarse con el servidor
+    try{
+      yo = new DatagramSocket();
+      System.out.println("Socket creado para comunicacion");
+    }catch(SocketException e){
+      System.out.println(e.getMessage());
+      System.exit(1);
+    }
+
+    String message="";
+    while(true){
+      //enviar mensaje
+      if (txt_mensaje.getText().toString() != ""){
+        btn_enviar.addActionListener(new ActionListener(){
+          public void actionPerformed(ActionEvent e){
+            enviarMensajeServidor();
+          }
+        });
       }
-      //conectarse
+      txt_mensaje.setText("");
+
+      //recibir paquete
       try{
-        yo = new DatagramSocket();
-      }catch(SocketException e){
+        bufferR = new byte [100];
+        paquete = new DatagramPacket(bufferR, bufferR.length);
+        yo.receive(paquete);
+        message = new String(paquete.getData());
+        area_chat.append(""+message+"\n");
+      }catch(IOException e)
+      {
         System.out.println(e.getMessage());
         System.exit(1);
-      }
-
-      String message="";
-      while(true){
-        //enviar mensaje
-        enviarMensajeServidor();
-        //recibir paquete
-        try{
-          buffer = new byte [80];
-          paquete = new DatagramPacket(buffer, buffer.length);
-          yo.receive(paquete);
-          message = new String(paquete.getData());
-          area_chat.append(""+message+"\n");
-        }catch(IOException e)
-        {
-          System.out.println(e.getMessage());
-          System.exit(1);
-        }
       }
     }
   }
