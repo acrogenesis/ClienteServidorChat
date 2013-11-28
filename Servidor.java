@@ -50,7 +50,6 @@ public class Servidor{
     String message;
     String messageData;
     String nickname;
-
     String[] parts = s.split("π");
     nickname = parts[0];
     messageData = parts[1];
@@ -59,20 +58,37 @@ public class Servidor{
     return message;
   }
 
-  public static void sendMessage(DatagramSocket yo, String aMandar){
+  static String getNickname(String s){
+    String[] parts = s.split("π");
+    String nickname = parts[0];
+    return nickname;
+  }
+
+  public static void sendMessage(DatagramSocket yo, String aMandar, String niki){
     DatagramPacket paquete;
     byte[] buffer;
-    buffer = new byte[80]; // Crear el arreglo de bytes que almacenará el string a transmitir
+    buffer = new byte[100]; // Crear el arreglo de bytes que almacenará el string a transmitir
     buffer = aMandar.getBytes();     // Transformamos el string a arreglo de bytes
     for(int i = 0; i < usuarios.size(); i++){
-        Clientes userARecibir = (Clientes)usuarios.get(i);
+      Clientes userARecibir = usuarios.get(i);
+      //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
+      if(userARecibir.getNickname() != niki){
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
+<<<<<<< HEAD
       try{
         yo.send(paquete);
 		System.out.println("sending message");
       }catch(IOException e){
         System.out.println(e.getMessage());
         System.exit(1);
+=======
+        try{
+          yo.send(paquete);
+        }catch(IOException e){
+          System.out.println(e.getMessage());
+          System.exit(1);
+        }
+>>>>>>> faa41168dca6adeb77469af4a47bf1fd52c3dc52
       }
     }
   }
@@ -83,12 +99,10 @@ public class Servidor{
     DatagramPacket paquete; // Paquete para recibir los datos
     InetAddress dirCliente = null;// Dirección IP del cliente que manda los datos
     int puertoCliente; // Puerto del cliente que manda los datos
-    byte[] buffer = new byte[80]; // Memoria donde se pondrán los datos recibidos (arreglo de bytes)
+    byte[] buffer = new byte[100]; // Memoria donde se pondrán los datos recibidos (arreglo de bytes)
     String recibido; // String para guardar los bytes recibidos transformados a caracteres
     String aMandar; // El string que se responderá al cliente, se transformará a bytes 
     final int PUERTO = 5000; // Puerto en cual se recibirán los datagramas.
-
-    boolean viejo = false; //usuario ya creado
 
     // Crear el socket que escuchará en el PUERTO 
     try{
@@ -100,11 +114,11 @@ public class Servidor{
     // Técnicamente todavía no escucha, si no hasta por datagramas sino hasta que se lee del socket (receive)
     // Pero es un buen lugar para poner el letrero, ya que lo primero que se hará en el ciclo es escuchar
     System.out.println("Socket escuchando en el puerto "+PUERTO); 
-
+    boolean first = true;
+    boolean esta = false;
     while(true){
       //reiniciar variable viejo
-      viejo = false;
-      buffer = new byte[80]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
+      buffer = new byte[100]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
       paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
 
       try{
@@ -118,16 +132,18 @@ public class Servidor{
       dirCliente = paquete.getAddress();// Obtener la dirección del cliente
       puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
 
-    //checarcliente haber si es cliente nuevo
+      //checarcliente haber si es cliente nuevo
+      esta = false;
       for(int i = 0; i < usuarios.size(); i++){
-        Clientes checar = (Clientes) usuarios.get(i);
-        if(dirCliente == checar.getDir()){
-          viejo = true;
-          break;
+        Clientes checar = usuarios.get(i);
+       // System.out.println("dircliente> " + dirCliente.toString() + " " + checar.getDir().toString() + " <" );
+        if(dirCliente.toString().trim() == checar.getDir().toString().trim()){
+          esta = true;
+          System.out.println("ya esta el cliente");
         }
+      //  System.out.println("clientes: " + checar.getNickname());
       }
-
-      if(!viejo){
+      if (!esta){
         Clientes c = new Clientes();
         c.setInetAddress(dirCliente);
         c.setPuerto(puertoCliente);
@@ -135,16 +151,18 @@ public class Servidor{
         String nick = partes[0];
         c.setNickname(nick);
         usuarios.add(c);
-        sendMessage(yo, "Usuario " + nick + " inicio sesion");
+        System.out.println("Se agrego al usuario " + nick + " " + c.getDir().toString());
+        sendMessage(yo, "Usuario " + nick + " inicio sesion", nick);
       }
+
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
-      //System.out.println(dirCliente.toString()+"("+puertoCliente+") >>"+recibido);
+      System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
 
       //aMandar = new String(recibido.toUpperCase()); // Transformamos a mayúsculas el string recibido
       aMandar = parseMessage(recibido, dirCliente.toString());
 
       //un for para enviar paquete a todos los usuarios conectados
-      sendMessage(yo, aMandar);
+      sendMessage(yo, aMandar.trim(), getNickname(aMandar));
     }
   //yo.close();
   }
