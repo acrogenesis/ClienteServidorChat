@@ -85,13 +85,29 @@ public class Servidor{
     return nickname;
   }
 
-public static void checkActivo(){
+public static void checkActivo(DatagramSocket yo){
 	
 	
-	long test = System.currentTimeMillis();
-	if(test >= (pastTime + 15*1000)) { //multiply by 1000 to get milliseconds
-	  doSomething();
-	}
+	for(int i = 0; i < usuarios.size(); i++){
+		Cliente check = usuarios.get(i);
+		long test = System.currentTimeMillis();
+		
+		if(test >= (check.getPastTime() + 120*1000)) { //multiply by 1000 to get milliseconds
+	  		check.setStatus(false);
+			String fin = "Inactividad. Cierra el chat y vuelve a conectarte."
+			buffer fin = new byte [100];
+			fin = fin.getBytes();
+			DatagramPacket paquete = new DatagramPacket(fin, fin.length, check.getDir, check.getPuerto);
+			try{
+							        yo.send(fin);
+									System.out.println("sending private message " + aMandar);
+							      }catch(IOException e){
+							        System.out.println(e.getMessage());
+							        System.exit(1);
+			}
+			
+		}
+	}	
 }
 
 public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String aQuien)
