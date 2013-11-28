@@ -149,18 +149,18 @@ public class Cliente {
 					
 					// Dirección IP del servidor 
 					try{
-													       					dirServidor = InetAddress.getByName(args[0]); // Obtener la dirección del servidor dada en forma de parámetro
-																		}catch(UnknownHostException ex){
-													        					System.out.println(ex.getMessage());
-													        					System.exit(1);
-																		}
-																		//conectarse
-																		try{
-																			        	yo = new DatagramSocket();
-																			 }catch(SocketException e){
-																			       System.out.println(e.getMessage());
-																			       System.exit(1);
-																		}
+                dirServidor = InetAddress.getByName(args[0]); // Obtener la dirección del servidor dada en forma de parámetro
+          }catch(UnknownHostException ex){
+                  System.out.println(ex.getMessage());
+                  System.exit(1);
+          }
+          //conectarse
+          try{
+            yo = new DatagramSocket();
+          }catch(SocketException e){
+            System.out.println(e.getMessage());
+            System.exit(1);
+          }
 						
 			}
 			
