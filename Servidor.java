@@ -134,9 +134,8 @@ public class Servidor{
         String nick = partes[0];
         c.setNickname(nick);
         usuarios.add(c);
+        sendMessage(yo, "Usuario " + nick + " inicio sesion");
       }
-
-
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       //System.out.println(dirCliente.toString()+"("+puertoCliente+") >>"+recibido);
 
