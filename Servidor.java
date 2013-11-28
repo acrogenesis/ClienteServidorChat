@@ -117,7 +117,7 @@ public class Servidor{
       dirCliente = paquete.getAddress();// Obtener la dirección del cliente
       puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
 
-    //checarcliente haber si es cliente nuevo
+      //checarcliente haber si es cliente nuevo
       for(int i = 0; i < usuarios.size(); i++){
         Clientes checar = (Clientes) usuarios.get(i);
         if(dirCliente == checar.getDir()){
