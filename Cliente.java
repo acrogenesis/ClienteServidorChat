@@ -95,15 +95,34 @@ public class Cliente {
 		
 			}
 			
-			public static void iniciarSesion(){
-				
-			}
 			
 			public static void enviarMensajeServidor(){
 				
 			}
 			
 			public static void recibirMensajeServidor(){
+				
+				public static DatagramSocket recibir;
+				public static DatagramPacket paquete_receptor;
+				String message="";
+				
+				while(true){
+					try{
+					
+						byte [] buffer = new byte [80];
+						recibir = new DatagramSocket();
+						paquete_receptor = new DatagramPacket(buffer, buffer.length);
+						recibir(paquete_receptor);
+					
+					}catch(IOException e)
+					{
+						System.out.println(e.getMessage());
+						System.exit(1);
+					}
+					
+					message = new String(paquete_receptor.getData);
+					area_chat.append(""+message+"\n");
+				}	
 				
 			}
 			
@@ -143,6 +162,8 @@ public class Cliente {
 																			       System.exit(1);
 																		}
 						
-			}		
+			}
+			
+		recibirMensajeServidor();
 	}	
 }
