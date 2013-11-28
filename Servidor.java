@@ -84,42 +84,41 @@ static String parseMessage(String s , String ip){
     System.out.println("Socket escuchando en el puerto "+PUERTO); 
 
     while(true){
-      	
+
 		buffer = new byte[80]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
-      	paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
-      
+    paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
+
 		try{
-        		yo.receive(paquete);
-      	}catch(IOException e){
-              	System.out.println(e.getMessage());
-              	System.exit(1);
-      }
-      
+      yo.receive(paquete);
+    }catch(IOException e){
+      System.out.println(e.getMessage());
+      System.exit(1);
+    }
+
 	  recibido = new String(paquete.getData()).trim(); // Extraer los datos recibidos y transformalos a String
 	  dirCliente = paquete.getAddress();// Obtener la dirección del cliente
 	  puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
-	  
+
 	//checarcliente haber si es cliente nuevo
-	  	for(int i = 0; i < usuarios.size(); i++){
+	  for(int i = 0; i < usuarios.size(); i++){
 			Clientes checar = (Clientes) usuarios.get(i);
 			if(dirCliente == checar.getDir()){
 				viejo = true;
 				break;
 			}
-	
 		}
 		
 	 	if(!viejo){
-	  		Clientes c = new Clientes();
-	  		c.setInetAddress(dirCliente);
-	  		c.setPuerto(puertoCliente);
+	  	Clientes c = new Clientes();
+	  	c.setInetAddress(dirCliente);
+	  	c.setPuerto(puertoCliente);
 			String[] partes = recibido.split("π");
 			String nick = partes[0];
 			c.setNickname(nick);
-	  		usuarios.add(c);
+	  	usuarios.add(c);
 		}
-	
-     
+
+
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       //System.out.println(dirCliente.toString()+"("+puertoCliente+") >>"+recibido);
 
@@ -133,8 +132,8 @@ static String parseMessage(String s , String ip){
 	
 	for(int i = 0; i < usuarios.size(); i++){
 		Clientes userARecibir = (Clientes)usuarios.get(i);
-      	paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
-      	
+    paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
+
 		try{
               yo.send(paquete);
       	}catch(IOException e){
