@@ -59,12 +59,17 @@ public class Servidor{
     return message;
   }
 
-  public static void sendMessage(DatagramSocket yo, DatagramPacket paquete){
-    try{
-      yo.send(paquete);
-    }catch(IOException e){
-      System.out.println(e.getMessage());
-      System.exit(1);
+  public static void sendMessage(DatagramSocket yo, byte[] buffer){
+    DatagramPacket paquete;
+    for(int i = 0; i < usuarios.size(); i++){
+        Clientes userARecibir = (Clientes)usuarios.get(i);
+        paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
+      try{
+        yo.send(paquete);
+      }catch(IOException e){
+        System.out.println(e.getMessage());
+        System.exit(1);
+      }
     }
   }
 
@@ -139,20 +144,17 @@ public class Servidor{
       // Llenamos el paquete con los bytes a enviar y el destino (dirIP y puerto)
 
       //un for para enviar paquete a todos los usuarios conectados
-
-      for(int i = 0; i < usuarios.size(); i++){
-        Clientes userARecibir = (Clientes)usuarios.get(i);
-        paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
-        sendMessage(yo,paquete);
-        /*
-         *try{
-         *  yo.send(paquete);
-         *}catch(IOException e){
-         *  System.out.println(e.getMessage());
-         *  System.exit(1);
-         *}
-         */
-      }
+      
+      sendMessage(yo, buffer);
+      /*
+       *try{
+       *  yo.send(paquete);
+       *}catch(IOException e){
+       *  System.out.println(e.getMessage());
+       *  System.exit(1);
+       *}
+       */
+    
     }
   //yo.close();
   }
