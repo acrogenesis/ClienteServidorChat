@@ -95,7 +95,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 				paquete = new DatagramPacket(buffer,buffer.length, _dmDir, _dmPuerto);
 				      try{
 				        yo.send(paquete);
-						System.out.println("sending message");
+						System.out.println("sending private message " + aMandar);
 				      }catch(IOException e){
 				        System.out.println(e.getMessage());
 				        System.exit(1);
@@ -125,7 +125,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
       try{
         yo.send(paquete);
-		System.out.println("sending message");
+        System.out.println("sending message: " + aMandar);
       }catch(IOException e){
         System.out.println(e.getMessage());
         System.exit(1);
