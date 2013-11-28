@@ -85,8 +85,10 @@ public class Cliente {
 										{
 											String nombre = JOptionPane.showInputDialog("Nickname: ");
 											nickname = nombre;
-											connect = true;
-											
+                      if (nombre == ""){
+                        connect = false;
+                      }
+                        connect = true;
 										}
 										
 							});
