@@ -44,6 +44,7 @@ class Clientes{
 public class Servidor{
 
   public static ArrayList<Clientes> usuarios = new ArrayList<Clientes>();
+  public static HashMap<String, InetAddress> map = new HashMap<String, InetAddress>();
 
 
   static String parseMessage(String s , String ip){
@@ -64,7 +65,8 @@ public class Servidor{
     return nickname;
   }
 
-  public static void sendMessage(DatagramSocket yo, String aMandar, String niki){
+  public static void sendMessage(DatagramSocket yo, String aMandar, String niki)
+{
     DatagramPacket paquete;
     byte[] buffer;
     buffer = new byte[100]; // Crear el arreglo de bytes que almacenará el string a transmitir
@@ -74,24 +76,16 @@ public class Servidor{
       //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
       if(userARecibir.getNickname() != niki){
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
-<<<<<<< HEAD
       try{
         yo.send(paquete);
 		System.out.println("sending message");
       }catch(IOException e){
         System.out.println(e.getMessage());
         System.exit(1);
-=======
-        try{
-          yo.send(paquete);
-        }catch(IOException e){
-          System.out.println(e.getMessage());
-          System.exit(1);
-        }
->>>>>>> faa41168dca6adeb77469af4a47bf1fd52c3dc52
       }
     }
   }
+}
 
 
   public static void main(String[] args){
@@ -132,29 +126,36 @@ public class Servidor{
       dirCliente = paquete.getAddress();// Obtener la dirección del cliente
       puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
 
-      //checarcliente haber si es cliente nuevo
-      esta = false;
-      for(int i = 0; i < usuarios.size(); i++){
-        Clientes checar = usuarios.get(i);
-       // System.out.println("dircliente> " + dirCliente.toString() + " " + checar.getDir().toString() + " <" );
-        if(dirCliente.toString().trim() == checar.getDir().toString().trim()){
-          esta = true;
-          System.out.println("ya esta el cliente");
-        }
-      //  System.out.println("clientes: " + checar.getNickname());
-      }
-      if (!esta){
-        Clientes c = new Clientes();
-        c.setInetAddress(dirCliente);
-        c.setPuerto(puertoCliente);
-        String[] partes = recibido.split("π");
-        String nick = partes[0];
-        c.setNickname(nick);
-        usuarios.add(c);
-        System.out.println("Se agrego al usuario " + nick + " " + c.getDir().toString());
-        sendMessage(yo, "Usuario " + nick + " inicio sesion", nick);
-      }
-
+	//checar si es paquete de registro
+	if(recibido.startsWith(".registrar")){
+		
+		String[] info = recibido.split(" ");
+		
+		if(map.get(info[1]) == null) //nickname ya esta siendo usado
+		{
+			map.put(info[1], dirCliente);
+			Clientes c = new Clientes();
+			c.setInetAddress(dirCliente);
+			c.setPuerto(puertoCliente);
+			c.setNickname(info[1]);
+			usuarios.add(c);
+			System.out.println("Se agrego al usuario " + info[1] + " " + c.getDir().toString());
+			String registrado = "Bienvenido al Chat" + info[1];
+			byte [] register = new byte[100];
+			register = registrado.getBytes();
+			DatagramPacket registro = new DatagramPacket(register, register.length, dirCliente, puertoCliente);
+			try{
+				yo.send(registro);
+			}catch(IOException ex){
+				System.out.println(ex.getMessage());
+				System.exit(1);
+			}
+			sendMessage(yo, "Usuario " + info[1] + " inicio sesion", info[1]);
+			
+		}
+		
+		System.out.println(usuarios.size() + "\n");
+	}else{
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
 
@@ -163,6 +164,7 @@ public class Servidor{
 
       //un for para enviar paquete a todos los usuarios conectados
       sendMessage(yo, aMandar.trim(), getNickname(aMandar));
+		}
     }
   //yo.close();
   }

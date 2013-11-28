@@ -129,7 +129,7 @@ public class Cliente {
 
     boolean connect = false;
     //conexión con socket 
-    DatagramPacket paquete;	
+    DatagramPacket paquete;        
     byte [] buffer;
     byte [] bufferR;
     try{
@@ -162,6 +162,19 @@ public class Cliente {
       System.out.println(e.getMessage());
       System.exit(1);
     }
+
+	if(!wait){
+			String mensaje = ".registrar " + nickname;
+			byte[] registrarBuffer = new byte[100];
+			registrarBuffer = mensaje.getBytes();
+			DatagramPacket registrar = new DatagramPacket(registrarBuffer, registrarBuffer.length, dirServidor, PUERTO);
+			try{
+						yo.send(registrar);
+			}catch(IOException ex){
+						System.out.println(ex.getMessage());
+						System.exit(1);
+			}
+			}
 
     String message="";
     while(true){
