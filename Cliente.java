@@ -31,19 +31,7 @@ public class Cliente {
 		static JTextArea area_chat = null;
 		JScrollPane scroll = null;
 		JPanel contenedor_areachat = null;
-		
-		//conexión con socket 
-		DatagramSocket yo = null;		// Socket del cliente para comunicarse con el servidor
-		InetAddress dirServidor = null;	// Dirección IP del servidor
-		DatagramPacket paquete;	
-		final int PUERTO = 5000; //puerto para con servidor
-		
-		
-		ServerSocket socketDM = null;
-		Socket socket = null;
-		BufferedReader lector = null;
-		PrintWriter escritor = null;
-		byte[] buffer = new byte[80];		// Memoria donde se pondrá el string (bytes) a mandar
+		static boolean connect = false;
 		
 		public Cliente(){
 			hacerInterfaz();
@@ -89,27 +77,62 @@ public class Cliente {
 				ventana_chat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				
 			}
+			public static void conectar(){
+			btn_conectar.addActionListener(new ActionListener()
+							{
+										
+										public void actionPerformed(ActionEvent e)
+										{
+											String nombre = JOptionPane.showInputDialog("Nickname: ");
+											nickname = nombre;
+											connect = true;
+											
+										}
+										
+							});
+		
+			}
 			
-	public static void conectar(){
-		
-		btn_conectar.addActionListener(new ActionListener()
-		{
-					
-					public void actionPerformed(ActionEvent e)
-					{
-						String nombre = JOptionPane.showInputDialog("Nickname: ");
-						nickname = nombre;
-						System.out.println(nombre);
-					}
-					
-		});
-	}
-		
-	
+			public static void iniciarSesion(){
+				
+			}
+			
 	public static void main(String[] args) {
 		
 		new Cliente();
-		conectar();
 		
-	}
+		boolean connect = false;
+		//conexión con socket 
+		DatagramSocket yo = null;		// Socket del cliente para comunicarse con el servidor
+		InetAddress dirServidor = null;	// Dirección IP del servidor
+		DatagramPacket paquete;	
+		final int PUERTO = 5000; //puerto para con servidor
+			
+			
+		ServerSocket socketDM = null;
+		Socket socket = null;
+		BufferedReader lector = null;
+		PrintWriter escritor = null;
+				
+		conectar();
+			
+			if(connect){
+					
+					// Dirección IP del servidor 
+					try{
+													       					dirServidor = InetAddress.getByName(args[0]); // Obtener la dirección del servidor dada en forma de parámetro
+																		}catch(UnknownHostException ex){
+													        					System.out.println(ex.getMessage());
+													        					System.exit(1);
+																		}
+																		//conectarse
+																		try{
+																			        	yo = new DatagramSocket();
+																			 }catch(SocketException e){
+																			       System.out.println(e.getMessage());
+																			       System.exit(1);
+																		}
+						
+			}		
+	}	
 }
