@@ -84,54 +84,33 @@ public class Cliente {
 			}
 			public static void conectar(){
 			btn_conectar.addActionListener(new ActionListener()
-							{
+			{
 										
-										public void actionPerformed(ActionEvent e)
-										{
-											String nombre = JOptionPane.showInputDialog("Nickname: ");
-											nickname = nombre;
-                      if (nombre == ""){
-                        connect = false;
-                      }
-                        connect = true;
+					public void actionPerformed(ActionEvent e)
+					{
+						String nombre = JOptionPane.showInputDialog("Nickname: ");
+						nickname = nombre;
+                      	if (nombre == ""){
+                        	connect = false;
+                      	}else{
+                        	connect = true;
 										}
 										
-							});
+							}});
 		
 			}
 			
 			
 			public static void enviarMensajeServidor(){
 				
-				btn_enviar.addActionListener(new ActionListener(){
-					
-						public void actionPerformed(ActionEvent e)
-						{
-							if(txt_mensaje != null && txt_ip_dm == null){
-								
-								String enviar = txt_mensaje.getText();
-								String message = nickname+"π"+enviar;
-								byte[] bufferSend = new byte[80];
-								bufferSend = message.getBytes();
-								DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
-								
-								try{
-									yo.send(paq);
-								}catch(IOException ex){
-									System.out.println(ex.getMessage());
-									System.exit(1);
-								}
-							}
-								
-						}
-					
-				});
+				
 				
 			}
 			
 
 			
 	public static void main(String[] args) {
+		
 		
 		new Cliente();
 		
@@ -165,7 +144,27 @@ public class Cliente {
 								
 						while(true){
 									//enviar mensaje
-									enviarMensajeServidor();
+									btn_enviar.addActionListener(new ActionListener(){
+												public void actionPerformed(ActionEvent e)
+												{
+																								System.out.println("aqui");
+												if(txt_mensaje != null && txt_ip_dm == null){
+												String enviar = txt_mensaje.getText();
+												System.out.println(enviar);
+												System.out.println("hola");
+												String message = nickname+"π"+enviar;
+												System.out.println(message);
+												byte[] bufferSend = new byte[80];
+												bufferSend = message.getBytes();
+												DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
+												try{
+																								yo.send(paq);
+																								}catch(IOException ex){
+																								System.out.println(ex.getMessage());
+																								System.exit(1);
+																								}
+												}
+												}});
 							
 									//recibir paquete
 									try{
@@ -174,6 +173,7 @@ public class Cliente {
 										paquete = new DatagramPacket(buffer, buffer.length);
 										yo.receive(paquete);
 										message = new String(paquete.getData());
+										System.out.println(message);
 										area_chat.append(""+message+"\n");
 									
 									}catch(IOException e)

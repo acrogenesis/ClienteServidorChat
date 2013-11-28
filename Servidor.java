@@ -69,6 +69,7 @@ public class Servidor{
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
       try{
         yo.send(paquete);
+		System.out.println("sending message");
       }catch(IOException e){
         System.out.println(e.getMessage());
         System.exit(1);
