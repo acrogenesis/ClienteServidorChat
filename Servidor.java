@@ -43,7 +43,7 @@ class Clientes{
 
 public class Servidor{
 
-  	public static ArrayList<Clientes> usuarios = new ArrayList<Clientes>;
+  	public static ArrayList<Clientes> usuarios = new ArrayList<Clientes>();
 
 
 static String parseMessage(String s , String ip){
@@ -70,6 +70,8 @@ static String parseMessage(String s , String ip){
     String aMandar; // El string que se responderá al cliente, se transformará a bytes 
     final int PUERTO = 5000; // Puerto en cual se recibirán los datagramas.
 
+	boolean viejo = false; //usuario ya creado
+
     // Crear el socket que escuchará en el PUERTO 
     try{
       yo = new DatagramSocket(PUERTO);
@@ -94,17 +96,30 @@ static String parseMessage(String s , String ip){
       }
       
 	  recibido = new String(paquete.getData()).trim(); // Extraer los datos recibidos y transformalos a String
-      dirCliente = paquete.getAddress();// Obtener la dirección del cliente
+	  dirCliente = paquete.getAddress();// Obtener la dirección del cliente
 	  puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
-	  Clientes c = new Clientes();
-	  c.setInetAddress(dirCliente);
-	  c.setPuerto(puertoCliente)
-	  //falta nickname
-	  usuarios.add(c);
+	  
+	//checarcliente haber si es cliente nuevo
+	  	for(int i = 0; i < usuarios.size(); i++){
+			Clientes checar = (Clientes) usuarios.get(i);
+			if(dirCliente == checar.getDir()){
+				viejo = true;
+				break;
+			}
+	
+		}
+		
+	 	if(!viejo){
+	  		Clientes c = new Clientes();
+	  		c.setInetAddress(dirCliente);
+	  		c.setPuerto(puertoCliente);
+			String[] partes = recibido.split("π");
+			String nick = partes[0];
+			c.setNickname(nick);
+	  		usuarios.add(c);
+		}
 	
      
-	  puertos.add(puertoCliente);
-
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       //System.out.println(dirCliente.toString()+"("+puertoCliente+") >>"+recibido);
 
@@ -116,9 +131,9 @@ static String parseMessage(String s , String ip){
 
 	//un for para enviar paquete a todos los usuarios conectados
 	
-	for(int i = 0; i < puertos.size(); i++){
+	for(int i = 0; i < usuarios.size(); i++){
 		Clientes userARecibir = (Clientes)usuarios.get(i);
-      	paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuert());
+      	paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
       	
 		try{
               yo.send(paquete);
