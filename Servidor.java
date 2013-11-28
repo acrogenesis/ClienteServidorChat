@@ -7,10 +7,17 @@ La aplicación escucha datagramas en el puerto 5000
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 class Clientes{
+	
   private String nickname;
   private InetAddress dir;
+  private int puerto;
+
+  public Clientes(){
+		
+  }
 
   public void setNickname(String s){
     nickname = s;
@@ -18,17 +25,28 @@ class Clientes{
   public void setInetAddress(InetAddress d){
     dir = d;
   }
+
+  public void setPuerto(int d){
+    puerto = d;
+  }
   public String getNickname(){
     return nickname;
   }
   public InetAddress getDir(){
     return dir;
   }
+
+  public int getPuerto(){
+    return puerto;
+  }
 }
 
 public class Servidor{
 
-  static String parseMessage(String s , String ip){
+  	public static ArrayList<Clientes> usuarios = new ArrayList<Clientes>;
+
+
+static String parseMessage(String s , String ip){
     String message;
     String messageData;
     String nickname;
@@ -40,6 +58,8 @@ public class Servidor{
     message = nickname + "(" + ip + "): " + messageData;
     return message;
   }
+	
+
   public static void main(String[] args){
     DatagramSocket yo = null; // Socket del servidor para recibir datagramas
     DatagramPacket paquete; // Paquete para recibir los datos
@@ -62,17 +82,28 @@ public class Servidor{
     System.out.println("Socket escuchando en el puerto "+PUERTO); 
 
     while(true){
-      buffer = new byte[80]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
-      paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
-      try{
-        yo.receive(paquete);
-      }catch(IOException e){
-              System.out.println(e.getMessage());
-              System.exit(1);
+      	
+		buffer = new byte[80]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
+      	paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
+      
+		try{
+        		yo.receive(paquete);
+      	}catch(IOException e){
+              	System.out.println(e.getMessage());
+              	System.exit(1);
       }
-      recibido = new String(paquete.getData()); // Extraer los datos recibidos y transformalos a String
+      
+	  recibido = new String(paquete.getData()).trim(); // Extraer los datos recibidos y transformalos a String
       dirCliente = paquete.getAddress();// Obtener la dirección del cliente
-      puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
+	  puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
+	  Clientes c = new Clientes();
+	  c.setInetAddress(dirCliente);
+	  c.setPuerto(puertoCliente)
+	  //falta nickname
+	  usuarios.add(c);
+	
+     
+	  puertos.add(puertoCliente);
 
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       //System.out.println(dirCliente.toString()+"("+puertoCliente+") >>"+recibido);
@@ -82,13 +113,20 @@ public class Servidor{
       buffer = new byte[80]; // Crear el arreglo de bytes que almacenará el string a transmitir
       buffer = aMandar.getBytes();      // Transformamos el string a arreglo de bytes
       // Llenamos el paquete con los bytes a enviar y el destino (dirIP y puerto)
-      paquete = new DatagramPacket(buffer,buffer.length, dirCliente, puertoCliente);
-      try{
+
+	//un for para enviar paquete a todos los usuarios conectados
+	
+	for(int i = 0; i < puertos.size(); i++){
+		Clientes userARecibir = (Clientes)usuarios.get(i);
+      	paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuert());
+      	
+		try{
               yo.send(paquete);
-      }catch(IOException e){
+      	}catch(IOException e){
               System.out.println(e.getMessage());
               System.exit(1);
-      }
+      	}
+	}
     }
   //yo.close();
   }
