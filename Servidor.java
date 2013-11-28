@@ -8,8 +8,26 @@ La aplicación escucha datagramas en el puerto 5000
 import java.io.*;
 import java.net.*;
 
+class Clientes{
+  private String nickname;
+  private InetAddress dir;
+
+  public void setNickname(String s){
+    nickname = s;
+  }
+  public void setInetAddress(InetAddress d){
+    dir = d;
+  }
+  public String getNickname(){
+    return nickname;
+  }
+  public InetAddress getDir(){
+    return dir;
+  }
+}
+
 public class Servidor{
-	
+
   static String parseMessage(String s , String ip){
     String message;
     String messageData;
