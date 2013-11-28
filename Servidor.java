@@ -76,7 +76,7 @@ public class Servidor{
   }
 
 public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String aQuien)
-{
+{	System.out.println("hello");
 	DatagramPacket paquete;
 	byte[] buffer;
 	buffer = new byte[100]; // Crear el arreglo de bytes que almacenará el string a transmitir
@@ -85,8 +85,11 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 	for(int i = 0; i < usuarios.size(); i++){
 	      Clientes userARecibir = usuarios.get(i);
 	      //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
-	      if(userARecibir.getNickname() == aQuien && userARecibir.getStatus())
-			{
+		  System.out.println("adentro de for");
+		  System.out.println(aQuien);
+		  System.out.println(userARecibir.getNickname());
+	      if(userARecibir.getNickname().matches(aQuien) && userARecibir.getStatus())
+			{	System.out.println("bonjour");
 				InetAddress _dmDir = userARecibir.getDir();
 				int _dmPuerto = userARecibir.getPuerto();
 				paquete = new DatagramPacket(buffer,buffer.length, _dmDir, _dmPuerto);
@@ -100,6 +103,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 				enviado= true; //usuario si existe
 				break;
 			}
+			System.out.println("al final del for");
 	}
 	
 	if(enviado){ 
@@ -221,8 +225,11 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 		{   System.out.println("privado");
 			String[] info = recibido.split(" ");
 			String _aQuien = info[1];
+			System.out.println(_aQuien);
 			String _dm = info[2];
+			System.out.println(_dm);
 			String mandar = parseMessage(_dm, dirCliente.toString());
+			System.out.println(mandar);
 			sendPrivateMessage(yo, mandar.trim(), _aQuien);
 		}else{
 				System.out.println("aqui");
