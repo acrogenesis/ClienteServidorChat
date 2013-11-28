@@ -10,13 +10,13 @@ import java.net.*;
 import java.util.*;
 
 class Clientes{
-	
+
   private String nickname;
   private InetAddress dir;
   private int puerto;
 
   public Clientes(){
-		
+
   }
 
   public void setNickname(String s){
@@ -43,10 +43,10 @@ class Clientes{
 
 public class Servidor{
 
-  	public static ArrayList<Clientes> usuarios = new ArrayList<Clientes>();
+  public static ArrayList<Clientes> usuarios = new ArrayList<Clientes>();
 
 
-static String parseMessage(String s , String ip){
+  static String parseMessage(String s , String ip){
     String message;
     String messageData;
     String nickname;
@@ -58,7 +58,24 @@ static String parseMessage(String s , String ip){
     message = nickname + "(" + ip + "): " + messageData;
     return message;
   }
-	
+
+  public static void sendMessage(DatagramSocket yo, String aMandar){
+    DatagramPacket paquete;
+    byte[] buffer;
+    buffer = new byte[80]; // Crear el arreglo de bytes que almacenará el string a transmitir
+    buffer = aMandar.getBytes();     // Transformamos el string a arreglo de bytes
+    for(int i = 0; i < usuarios.size(); i++){
+        Clientes userARecibir = (Clientes)usuarios.get(i);
+        paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
+      try{
+        yo.send(paquete);
+      }catch(IOException e){
+        System.out.println(e.getMessage());
+        System.exit(1);
+      }
+    }
+  }
+
 
   public static void main(String[] args){
     DatagramSocket yo = null; // Socket del servidor para recibir datagramas
@@ -70,78 +87,63 @@ static String parseMessage(String s , String ip){
     String aMandar; // El string que se responderá al cliente, se transformará a bytes 
     final int PUERTO = 5000; // Puerto en cual se recibirán los datagramas.
 
-	boolean viejo = false; //usuario ya creado
+    boolean viejo = false; //usuario ya creado
 
     // Crear el socket que escuchará en el PUERTO 
     try{
       yo = new DatagramSocket(PUERTO);
-        }catch(SocketException e){
-            System.out.println(e.getMessage());
-            System.exit(1);
-        }
+    }catch(SocketException e){
+      System.out.println(e.getMessage());
+      System.exit(1);
+    }
     // Técnicamente todavía no escucha, si no hasta por datagramas sino hasta que se lee del socket (receive)
     // Pero es un buen lugar para poner el letrero, ya que lo primero que se hará en el ciclo es escuchar
     System.out.println("Socket escuchando en el puerto "+PUERTO); 
 
     while(true){
-      	
-		buffer = new byte[80]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
-      	paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
-      
-		try{
-        		yo.receive(paquete);
-      	}catch(IOException e){
-              	System.out.println(e.getMessage());
-              	System.exit(1);
+      //reiniciar variable viejo
+      viejo = false;
+      buffer = new byte[80]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
+      paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
+
+      try{
+        yo.receive(paquete);
+      }catch(IOException e){
+        System.out.println(e.getMessage());
+        System.exit(1);
       }
-      
-	  recibido = new String(paquete.getData()).trim(); // Extraer los datos recibidos y transformalos a String
-	  dirCliente = paquete.getAddress();// Obtener la dirección del cliente
-	  puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
-	  
-	//checarcliente haber si es cliente nuevo
-	  	for(int i = 0; i < usuarios.size(); i++){
-			Clientes checar = (Clientes) usuarios.get(i);
-			if(dirCliente == checar.getDir()){
-				viejo = true;
-				break;
-			}
-	
-		}
-		
-	 	if(!viejo){
-	  		Clientes c = new Clientes();
-	  		c.setInetAddress(dirCliente);
-	  		c.setPuerto(puertoCliente);
-			String[] partes = recibido.split("π");
-			String nick = partes[0];
-			c.setNickname(nick);
-	  		usuarios.add(c);
-		}
-	
-     
+
+      recibido = new String(paquete.getData()).trim(); // Extraer los datos recibidos y transformalos a String
+      dirCliente = paquete.getAddress();// Obtener la dirección del cliente
+      puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
+
+    //checarcliente haber si es cliente nuevo
+      for(int i = 0; i < usuarios.size(); i++){
+        Clientes checar = (Clientes) usuarios.get(i);
+        if(dirCliente == checar.getDir()){
+          viejo = true;
+          break;
+        }
+      }
+
+      if(!viejo){
+        Clientes c = new Clientes();
+        c.setInetAddress(dirCliente);
+        c.setPuerto(puertoCliente);
+        String[] partes = recibido.split("π");
+        String nick = partes[0];
+        c.setNickname(nick);
+        usuarios.add(c);
+        sendMessage(yo, "Usuario " + nick + " inicio sesion");
+      }
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       //System.out.println(dirCliente.toString()+"("+puertoCliente+") >>"+recibido);
 
       //aMandar = new String(recibido.toUpperCase()); // Transformamos a mayúsculas el string recibido
       aMandar = parseMessage(recibido, dirCliente.toString());
-      buffer = new byte[80]; // Crear el arreglo de bytes que almacenará el string a transmitir
-      buffer = aMandar.getBytes();      // Transformamos el string a arreglo de bytes
-      // Llenamos el paquete con los bytes a enviar y el destino (dirIP y puerto)
 
-	//un for para enviar paquete a todos los usuarios conectados
-	
-	for(int i = 0; i < usuarios.size(); i++){
-		Clientes userARecibir = (Clientes)usuarios.get(i);
-      	paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
-      	
-		try{
-              yo.send(paquete);
-      	}catch(IOException e){
-              System.out.println(e.getMessage());
-              System.exit(1);
-      	}
-	}
+      //un for para enviar paquete a todos los usuarios conectados
+      sendMessage(yo, aMandar);
     }
   //yo.close();
   }
