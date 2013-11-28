@@ -16,7 +16,7 @@ class Clientes{
   private int puerto;
   private boolean status;
   private long timeLastMessage;
- 
+
 
   public Clientes(){
 
@@ -34,13 +34,12 @@ class Clientes{
   }
 
   public void setStatus(boolean s){
-	
-	status = s;
-}
+    status = s;
+  }
 
   public void setTime(long t){
-	timeLastMessage = t;
-}
+    timeLastMessage = t;
+  }
   public String getNickname(){
     return nickname;
   }
@@ -53,12 +52,12 @@ class Clientes{
   }
 
   public boolean getStatus(){
-	return status;
-	}
-	
-	public long getPastTime(){
-		return timeLastMessage;
-	}	
+  return status;
+  }
+
+  public long getPastTime(){
+    return timeLastMessage;
+  }
 }
 
 public class Servidor{
@@ -85,89 +84,92 @@ public class Servidor{
     return nickname;
   }
 
-public static void checkActivo(DatagramSocket yo){
-	
-	
-	for(int i = 0; i < usuarios.size(); i++){
-		Cliente check = usuarios.get(i);
-		long test = System.currentTimeMillis();
-		
-		if(test >= (check.getPastTime() + 120*1000)) { //multiply by 1000 to get milliseconds
-	  		check.setStatus(false);
-			String fin = "Inactividad. Cierra el chat y vuelve a conectarte."
-			buffer fin = new byte [100];
-			fin = fin.getBytes();
-			DatagramPacket paquete = new DatagramPacket(fin, fin.length, check.getDir, check.getPuerto);
-			try{
-							        yo.send(fin);
-									System.out.println("sending private message " + aMandar);
-							      }catch(IOException e){
-							        System.out.println(e.getMessage());
-							        System.exit(1);
-			}
-			
-		}
-	}	
-}
+  public static void checkActivo(DatagramSocket yo){
 
-public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String aQuien)
-{	System.out.println("hello");
-	DatagramPacket paquete;
-	byte[] buffer;
-	buffer = new byte[100]; // Crear el arreglo de bytes que almacenará el string a transmitir
-	buffer = aMandar.getBytes();     // Transformamos el string a arreglo de bytes
-	boolean enviado = false;
-	for(int i = 0; i < usuarios.size(); i++){
-	      Clientes userARecibir = usuarios.get(i);
-	      //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
-		  System.out.println("adentro de for");
-		  System.out.println(aQuien);
-		  System.out.println(userARecibir.getNickname());
-	      if(userARecibir.getNickname().matches(aQuien) && userARecibir.getStatus())
-			{	System.out.println("bonjour");
-				InetAddress _dmDir = userARecibir.getDir();
-				int _dmPuerto = userARecibir.getPuerto();
-				paquete = new DatagramPacket(buffer,buffer.length, _dmDir, _dmPuerto);
-				      try{
-				        yo.send(paquete);
-						System.out.println("sending private message " + aMandar);
-				      }catch(IOException e){
-				        System.out.println(e.getMessage());
-				        System.exit(1);
-				      }
-				enviado= true; //usuario si existe
-				break;
-			}
-			System.out.println("al final del for");
-	}
-	
-	if(enviado){ 
-		System.out.println("Mensaje privado fue enviado");
-	}
-	
-}
+    byte[] finB;
+    finB = new byte[100];
+    DatagramPacket paquete;
+    for(int i = 0; i < usuarios.size(); i++){
+      Clientes check = usuarios.get(i);
+      long test = System.currentTimeMillis();
 
-  public static void sendMessage(DatagramSocket yo, String aMandar, String niki)
-{
+      if(test >= (check.getPastTime() + 120*1000)) { //multiply by 1000 to get milliseconds
+          check.setStatus(false);
+          String fin = "Inactividad. Cierra el chat y vuelve a conectarte.";
+          finB = new byte [100];
+          finB = fin.getBytes();
+          paquete = new DatagramPacket(finB, finB.length, check.getDir(), check.getPuerto());
+          try{
+            yo.send(paquete);
+            System.out.println("inactividad de usuario ");
+          }catch(IOException e){
+            System.out.println(e.getMessage());
+            System.exit(1);
+          }
+
+      }
+    }
+  }
+
+  public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String aQuien)
+  {
+    System.out.println("hello");
     DatagramPacket paquete;
     byte[] buffer;
     buffer = new byte[100]; // Crear el arreglo de bytes que almacenará el string a transmitir
     buffer = aMandar.getBytes();     // Transformamos el string a arreglo de bytes
+    boolean enviado = false;
     for(int i = 0; i < usuarios.size(); i++){
-      Clientes userARecibir = usuarios.get(i);
-      //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
-      if(userARecibir.getNickname() != niki && userARecibir.getStatus()){
-        paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
-      try{
-        yo.send(paquete);
-        System.out.println("sending message: " + aMandar);
-      }catch(IOException e){
-        System.out.println(e.getMessage());
-        System.exit(1);
+          Clientes userARecibir = usuarios.get(i);
+          //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
+        System.out.println("adentro de for");
+        System.out.println(aQuien);
+        System.out.println(userARecibir.getNickname());
+          if(userARecibir.getNickname().matches(aQuien) && userARecibir.getStatus())
+        {	System.out.println("bonjour");
+          InetAddress _dmDir = userARecibir.getDir();
+          int _dmPuerto = userARecibir.getPuerto();
+          paquete = new DatagramPacket(buffer,buffer.length, _dmDir, _dmPuerto);
+                try{
+                  yo.send(paquete);
+              System.out.println("sending private message " + aMandar);
+                }catch(IOException e){
+                  System.out.println(e.getMessage());
+                  System.exit(1);
+                }
+          enviado= true; //usuario si existe
+          break;
+        }
+        System.out.println("al final del for");
+    }
+
+    if(enviado){
+      System.out.println("Mensaje privado fue enviado");
+    }
+
+  }
+
+  public static void sendMessage(DatagramSocket yo, String aMandar, String niki)
+  {
+      DatagramPacket paquete;
+      byte[] buffer;
+      buffer = new byte[100]; // Crear el arreglo de bytes que almacenará el string a transmitir
+      buffer = aMandar.getBytes();     // Transformamos el string a arreglo de bytes
+      for(int i = 0; i < usuarios.size(); i++){
+        Clientes userARecibir = usuarios.get(i);
+        //System.out.println("cant usuarios: "+ usuarios.size() +" userARecibir: " + userARecibir.getNickname() + " aMandar: " + niki);
+        if(userARecibir.getNickname() != niki && userARecibir.getStatus()){
+          paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
+        try{
+          yo.send(paquete);
+          System.out.println("sending message: " + aMandar);
+        }catch(IOException e){
+          System.out.println(e.getMessage());
+          System.exit(1);
+        }
       }
     }
   }
-}
 
 
   public static void main(String[] args){
@@ -207,88 +209,84 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
       recibido = new String(paquete.getData()).trim(); // Extraer los datos recibidos y transformalos a String
       dirCliente = paquete.getAddress();// Obtener la dirección del cliente
       puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
-		System.out.println(recibido);
-	//checar si es paquete de registro
-	if(recibido.startsWith(".registrar")){
-		
-		String[] info = recibido.split(" ");
-		
-		if(map.get(info[1]) == null) //nickname ya esta siendo usado
-		{
-			map.put(info[1], dirCliente);
-			Clientes c = new Clientes();
-			c.setInetAddress(dirCliente);
-			c.setPuerto(puertoCliente);
-			c.setNickname(info[1]);
-			c.setStatus(true);
-			c.setTime(System.currentTimeMillis); //tener el tiempo de mensaje;
-			usuarios.add(c);
-			System.out.println("Se agrego al usuario " + info[1] + " " + c.getDir().toString());
-			String registrado = "Bienvenido al Chat " + info[1];
-			byte [] register = new byte[100];
-			register = registrado.getBytes();
-			DatagramPacket registro = new DatagramPacket(register, register.length, dirCliente, puertoCliente);
-			try{
-				yo.send(registro);
-			}catch(IOException ex){
-				System.out.println(ex.getMessage());
-				System.exit(1);
-			}
-			sendMessage(yo, "Usuario " + info[1] + " inicio sesion", info[1]);
-			
-		}
-		else{
-			String _noRegistro = "Nickname ya existe!!";
-			byte[] _noRegister = new byte[100];
-			_noRegister = _noRegistro.getBytes();
-			DatagramPacket _noPaquete = new DatagramPacket(_noRegister, _noRegister.length, dirCliente, puertoCliente);
-			try{
-							yo.send(_noPaquete);
-			}catch(IOException ex){
-							System.out.println(ex.getMessage());
-							System.exit(1);
-			}
-			
-		}
-		
-		System.out.println(usuarios.size() + "\n");
-	}else{
-			String mandar;	
-		System.out.println("Usuarios de chat " + usuarios.size()+ "\n");
-      // Imprime la dirección y puerto del cliente y el string mandado (recibido)
-      System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
-		System.out.println(recibido);
-		if(recibido.startsWith(".dm")) //es un mensaje privado
-		{   System.out.println("privado");
-			String[] info = recibido.split(" ");
-			String _aQuien = info[1];
-			System.out.println(_aQuien);
-			String _dm = info[2];
-			System.out.println(_dm);
-			mandar = parseMessage(_dm, dirCliente.toString());
-			System.out.println(mandar);
-			sendPrivateMessage(yo, mandar.trim(), _aQuien);
-		}else{
-				System.out.println("aqui");
-     			 //aMandar = new String(recibido.toUpperCase()); // Transformamos a mayúsculas el string recibido
-      			aMandar = parseMessage(recibido, dirCliente.toString());
+      System.out.println(recibido);
+      //checar si es paquete de registro
+      if(recibido.startsWith(".registrar")){
 
-      			//un for para enviar paquete a todos los usuarios conectados
-      			sendMessage(yo, aMandar.trim(), getNickname(aMandar));
-		}
-		
-		Clientes sender;
-				for(int i = 0; i < usuarios.size(); i++){
-					sender = usuarios.get(i);
-					if((sender.getNickname().matches(getNickname(mandar)) && sender.getStatus()) || (sender.getNickname().matches(getNickname(aMandar)) && sender.getStatus()))
-					{
-						sender.setTime(System.currentTimeMillis);
-					}
-				}
+        String[] info = recibido.split(" ");
 
-		
-		
-		}
+        if(map.get(info[1]) == null) //nickname ya esta siendo usado
+        {
+          map.put(info[1], dirCliente);
+          Clientes c = new Clientes();
+          c.setInetAddress(dirCliente);
+          c.setPuerto(puertoCliente);
+          c.setNickname(info[1]);
+          c.setStatus(true);
+          c.setTime(System.currentTimeMillis()); //tener el tiempo de mensaje;
+          usuarios.add(c);
+          System.out.println("Se agrego al usuario " + info[1] + " " + c.getDir().toString());
+          String registrado = "Bienvenido al Chat " + info[1];
+          byte [] register = new byte[100];
+          register = registrado.getBytes();
+          DatagramPacket registro = new DatagramPacket(register, register.length, dirCliente, puertoCliente);
+          try{
+            yo.send(registro);
+          }catch(IOException ex){
+            System.out.println(ex.getMessage());
+            System.exit(1);
+          }
+          sendMessage(yo, "Usuario " + info[1] + " inicio sesion", info[1]);
+        }
+        else{
+          String _noRegistro = "Nickname ya existe!!";
+          byte[] _noRegister = new byte[100];
+          _noRegister = _noRegistro.getBytes();
+          DatagramPacket _noPaquete = new DatagramPacket(_noRegister, _noRegister.length, dirCliente, puertoCliente);
+          try{
+                  yo.send(_noPaquete);
+          }catch(IOException ex){
+                  System.out.println(ex.getMessage());
+                  System.exit(1);
+          }
+        }
+        System.out.println(usuarios.size() + "\n");
+      }else{
+        String mandar;
+        System.out.println("Usuarios de chat " + usuarios.size()+ "\n");
+        // Imprime la dirección y puerto del cliente y el string mandado (recibido)
+        System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
+        System.out.println(recibido);
+        if(recibido.startsWith(".dm")) //es un mensaje privado
+        {
+          System.out.println("privado");
+          String[] info = recibido.split(" ");
+          String _aQuien = info[1];
+          System.out.println(_aQuien);
+          String _dm = info[2];
+          System.out.println(_dm);
+          mandar = parseMessage(_dm, dirCliente.toString());
+          System.out.println(mandar);
+          sendPrivateMessage(yo, mandar.trim(), _aQuien);
+        }else{
+          System.out.println("aqui");
+          //aMandar = new String(recibido.toUpperCase()); // Transformamos a mayúsculas el string recibido
+          aMandar = parseMessage(recibido, dirCliente.toString());
+
+          //un for para enviar paquete a todos los usuarios conectados
+          sendMessage(yo, aMandar.trim(), getNickname(aMandar));
+        }
+
+        Clientes sender;
+        for(int i = 0; i < usuarios.size(); i++){
+          sender = usuarios.get(i);
+          if((sender.getNickname().matches(getNickname(mandar)) && sender.getStatus()) || (sender.getNickname().matches(getNickname(aMandar)) && sender.getStatus()))
+          {
+            sender.setTime(System.currentTimeMillis());
+          }
+        }
+
+      }
     }
   //yo.close();
   }
