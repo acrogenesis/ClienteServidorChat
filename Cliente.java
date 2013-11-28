@@ -97,6 +97,14 @@ public class Cliente {
 				
 			}
 			
+			public static void enviarMensajeServidor(){
+				
+			}
+			
+			public static void recibirMensajeServidor(){
+				
+			}
+			
 	public static void main(String[] args) {
 		
 		new Cliente();
