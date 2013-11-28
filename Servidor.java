@@ -14,7 +14,9 @@ class Clientes{
   private String nickname;
   private InetAddress dir;
   private int puerto;
-  public boolean status;
+  private boolean status;
+  private long timeLastMessage;
+ 
 
   public Clientes(){
 
@@ -35,6 +37,10 @@ class Clientes{
 	
 	status = s;
 }
+
+  public void setTime(long t){
+	timeLastMessage = t;
+}
   public String getNickname(){
     return nickname;
   }
@@ -48,6 +54,10 @@ class Clientes{
 
   public boolean getStatus(){
 	return status;
+	}
+	
+	public long getPastTime(){
+		return timeLastMessage;
 	}	
 }
 
@@ -74,6 +84,15 @@ public class Servidor{
     String nickname = parts[0];
     return nickname;
   }
+
+public static void checkActivo(){
+	
+	
+	long test = System.currentTimeMillis();
+	if(test >= (pastTime + 15*1000)) { //multiply by 1000 to get milliseconds
+	  doSomething();
+	}
+}
 
 public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String aQuien)
 {	System.out.println("hello");
@@ -186,6 +205,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 			c.setPuerto(puertoCliente);
 			c.setNickname(info[1]);
 			c.setStatus(true);
+			c.setTime(System.currentTimeMillis); //tener el tiempo de mensaje;
 			usuarios.add(c);
 			System.out.println("Se agrego al usuario " + info[1] + " " + c.getDir().toString());
 			String registrado = "Bienvenido al Chat " + info[1];
@@ -217,6 +237,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 		
 		System.out.println(usuarios.size() + "\n");
 	}else{
+			String mandar;	
 		System.out.println("Usuarios de chat " + usuarios.size()+ "\n");
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
@@ -228,7 +249,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
 			System.out.println(_aQuien);
 			String _dm = info[2];
 			System.out.println(_dm);
-			String mandar = parseMessage(_dm, dirCliente.toString());
+			mandar = parseMessage(_dm, dirCliente.toString());
 			System.out.println(mandar);
 			sendPrivateMessage(yo, mandar.trim(), _aQuien);
 		}else{
@@ -239,6 +260,18 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
       			//un for para enviar paquete a todos los usuarios conectados
       			sendMessage(yo, aMandar.trim(), getNickname(aMandar));
 		}
+		
+		Clientes sender;
+				for(int i = 0; i < usuarios.size(); i++){
+					sender = usuarios.get(i);
+					if((sender.getNickname().matches(getNickname(mandar)) && sender.getStatus()) || (sender.getNickname().matches(getNickname(aMandar)) && sender.getStatus()))
+					{
+						sender.setTime(System.currentTimeMillis);
+					}
+				}
+
+		
+		
 		}
     }
   //yo.close();
