@@ -217,7 +217,7 @@ public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String 
       // Imprime la dirección y puerto del cliente y el string mandado (recibido)
       System.out.println("recibi: " + dirCliente.toString()+" "+recibido);
 
-		if(recibido.startsWith(".dm")) //es un mensaje privado
+		if(recibido.matches(".dm")) //es un mensaje privado
 		{   System.out.println("privado");
 			String[] info = recibido.split(" ");
 			String _aQuien = info[1];
