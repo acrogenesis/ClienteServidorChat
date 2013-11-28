@@ -84,7 +84,8 @@ public class Servidor{
     System.out.println("Socket escuchando en el puerto "+PUERTO); 
 
     while(true){
-
+      //reiniciar variable viejo
+      viejo = false;
       buffer = new byte[80]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
       paquete = new DatagramPacket(buffer, buffer.length); // Crear paquete para recibir el datagrama
 
@@ -129,7 +130,7 @@ public class Servidor{
       // Llenamos el paquete con los bytes a enviar y el destino (dirIP y puerto)
 
       //un for para enviar paquete a todos los usuarios conectados
-    
+
       for(int i = 0; i < usuarios.size(); i++){
         Clientes userARecibir = (Clientes)usuarios.get(i);
         paquete = new DatagramPacket(buffer,buffer.length, userARecibir.getDir(), userARecibir.getPuerto());
