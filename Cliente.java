@@ -33,6 +33,11 @@ public class Cliente {
 		JPanel contenedor_areachat = null;
 		static boolean connect = false;
 		
+		//conexion
+		static DatagramSocket yo = null;		// Socket del cliente para comunicarse con el servidor
+		static InetAddress dirServidor = null;	// Dirección IP del servidor
+		static final int PUERTO = 5000; //puerto para con servidor
+		
 		public Cliente(){
 			hacerInterfaz();
 		}
@@ -96,33 +101,33 @@ public class Cliente {
 			
 			public static void enviarMensajeServidor(){
 				
+				btn_enviar.addActionListener(new ActionListener(){
+					
+						public void actionPerformed(ActionEvent e)
+						{
+							if(txt_mensaje != null && txt_ip_dm == null){
+								
+								String enviar = txt_mensaje.getText();
+								String message = nickname+"π"+enviar;
+								byte[] bufferSend = new byte[80];
+								bufferSend = message.getBytes();
+								DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
+								
+								try{
+									yo.send(paq);
+								}catch(IOException ex){
+									System.out.println(ex.getMessage());
+									System.exit(1);
+								}
+							}
+								
+						}
+					
+				});
+				
 			}
 			
-			public static void recibirMensajeServidor(){
-				
-				public static DatagramSocket recibir;
-				public static DatagramPacket paquete_receptor;
-				String message="";
-				
-				while(true){
-					try{
-					
-						byte [] buffer = new byte [80];
-						recibir = new DatagramSocket();
-						paquete_receptor = new DatagramPacket(buffer, buffer.length);
-						recibir(paquete_receptor);
-					
-					}catch(IOException e)
-					{
-						System.out.println(e.getMessage());
-						System.exit(1);
-					}
-					
-					message = new String(paquete_receptor.getData);
-					area_chat.append(""+message+"\n");
-				}	
-				
-			}
+
 			
 	public static void main(String[] args) {
 		
@@ -130,16 +135,9 @@ public class Cliente {
 		
 		boolean connect = false;
 		//conexión con socket 
-		DatagramSocket yo = null;		// Socket del cliente para comunicarse con el servidor
-		InetAddress dirServidor = null;	// Dirección IP del servidor
 		DatagramPacket paquete;	
-		final int PUERTO = 5000; //puerto para con servidor
-			
-			
-		ServerSocket socketDM = null;
-		Socket socket = null;
-		BufferedReader lector = null;
-		PrintWriter escritor = null;
+		byte [] buffer;
+		
 				
 		conectar();
 			
@@ -160,8 +158,32 @@ public class Cliente {
 																			       System.exit(1);
 																		}
 						
+
+						String message="";
+								
+						while(true){
+									//enviar mensaje
+									enviarMensajeServidor();
+							
+									//recibir paquete
+									try{
+									
+										buffer = new byte [80];
+										paquete = new DatagramPacket(buffer, buffer.length);
+										yo.receive(paquete);
+										message = new String(paquete.getData());
+										area_chat.append(""+message+"\n");
+									
+									}catch(IOException e)
+									{
+										System.out.println(e.getMessage());
+										System.exit(1);
+									}
+									
+									
+						}	
+			
 			}
 			
-		recibirMensajeServidor();
 	}	
 }
