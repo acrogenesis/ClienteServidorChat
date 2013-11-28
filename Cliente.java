@@ -23,6 +23,7 @@ public class Cliente {
 
   //enviar mensaje
   static JButton btn_enviar = null;
+	static JButton btn_privado = null;
   static JTextField txt_mensaje = null;
   static JTextField txt_ip_dm = null;
   JPanel contenedor_btntxt= null;
@@ -50,9 +51,12 @@ public class Cliente {
 
     //conectar 
     btn_conectar = new JButton("Conectar");
+	btn_privado = new JButton("Mensaje Privado");
     contenedor_btnConnect = new JPanel();
-    contenedor_btnConnect.setLayout(new GridLayout(1,1));
-    contenedor_btnConnect.add(btn_conectar);
+    contenedor_btnConnect.setLayout(new GridLayout(1,2));
+    contenedor_btnConnect.add(btn_privado);
+	contenedor_btnConnect.add(btn_conectar);
+
 
 
     //ver mensajes
@@ -105,7 +109,7 @@ public class Cliente {
   }
 
   public static void enviarMensajeServidor(){
-            //if(txt_mensaje.getText() != "" && txt_ip_dm.getText() == ""){
+         if(txt_mensaje.getText() != ""){
         String enviar = txt_mensaje.getText();
         String message = nickname+"π"+enviar;
         byte[] bufferSend = new byte[100];
@@ -118,9 +122,7 @@ public class Cliente {
           System.out.println(ex.getMessage());
           System.exit(1);
         }
-       //
-       // txt_ip_dm.setText("");
-        //}
+        }
   }
 
  public static void enviarMensajePrivado(){
@@ -128,7 +130,9 @@ public class Cliente {
 	String enviar = txt_mensaje.getText();
 	String message = nickname+"π"+enviar;
 	String _aQuien = txt_ip_dm.getText();
-	String todo = "dm "+ _aQuien + " " + message;
+	String todo = ".dm "+ _aQuien + " " + message;
+	
+	System.out.println(todo);
 	byte[] bufferSend = new byte[100];
 	bufferSend = message.getBytes();
 	DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
@@ -201,20 +205,25 @@ public class Cliente {
         btn_enviar.addActionListener(new ActionListener(){
           public void actionPerformed(ActionEvent e){
             enviarMensajeServidor();
+			
           }
         });
+		txt_mensaje.setText("");
       }
-      txt_mensaje.setText("");
+      
 
-	 if(txt_mensaje.getText().toString() != "" && txt_ip_dm.getText().toString() != "")
+	 if(txt_mensaje.getText().toString() != "")
 	{
-		btn_enviar.addActionListener(new ActionListener(){
+		btn_privado.addActionListener(new ActionListener(){
 		          public void actionPerformed(ActionEvent e){
 		            enviarMensajePrivado();
+					System.out.println("Mensaje Privado");
+					 
 		          }
 		  });
+		txt_mensaje.setText("");
 	}
-
+	
       //recibir paquete
       try{
         bufferR = new byte [100];
