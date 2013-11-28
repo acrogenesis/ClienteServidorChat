@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.*;
 
 public class Servidor{
+	
   static String parseMessage(String s , String ip){
     String message;
     String messageData;

@@ -19,34 +19,34 @@ public class ClienteMontse {
 	
 	JFrame ventana_chat=null;
 	
+	//conectar
+	JTextField txt_nick = null;
+	JButton btn_conectar = null;
+	JPanel contenedor_btnConnect = null;
+		
 	//enviar mensaje
 	JButton btn_enviar = null;
 	JTextField txt_mensaje = null;
 	JTextField txt_ip_dm = null;
 	JPanel contenedor_btntxt= null;
 	
-	//cambiar nick 
-	JTextField txt_nick = null;
-	JButton btn_change = null;
-	JPanel contenedor_btnNick = null;
-	
 	//Area de Mensajes del chat 
 	JTextArea area_chat = null;
 	JScrollPane scroll = null;
 	JPanel contenedor_areachat = null;
 	
-	
 	//conexión con socket 
 	DatagramSocket yo = null;		// Socket del cliente para comunicarse con el servidor
 	InetAddress dirServidor = null;	// Dirección IP del servidor
 	DatagramPacket paquete;	
-	final int PUERTO = 9000; //puerto para DM
+	final int PUERTO = 5000; //puerto para con servidor
 	
 	
 	ServerSocket socketDM = null;
 	Socket socket = null;
 	BufferedReader lector = null;
 	PrintWriter escritor = null;
+	byte[] buffer = new byte[80];		// Memoria donde se pondrá el string (bytes) a mandar
 	
 	//Sesion
 	String nickname = null;
@@ -58,7 +58,16 @@ public class ClienteMontse {
 	
 	public void hacerInterfaz(){
 		//JFRAME
-		ventana_chat = new JFrame("Cliente");
+		ventana_chat = new JFrame("Chat");
+		
+		//conectar 
+		btn_conectar = new JButton("Conectar");
+		txt_nick = new JTextField();
+		contenedor_btnConnect = new JPanel();
+		contenedor_btnConnect.setLayout(new GridLayout(1,2));
+		contenedor_btnConnect.add(txt_nick);
+		contenedor_btnConnect.add(btn_conectar);
+			
 		
 		//ver mensajes
 		area_chat = new JTextArea(25,12); //10 filas, 12 columna
@@ -78,48 +87,21 @@ public class ClienteMontse {
 		contenedor_btntxt.add(txt_ip_dm);
 		contenedor_btntxt.add(btn_enviar);
 		
-		//cambiar nick
-		txt_nick = new JTextField();
-		btn_change = new JButton("Cambiar");
-		contenedor_btnNick = new JPanel();
-		contenedor_btnNick.setLayout(new GridLayout(1,2));
-		contenedor_btnNick.add(txt_nick);
-		contenedor_btnNick.add(btn_change);
-		
 		//ventana 
 		ventana_chat.setLayout(new BorderLayout());
 		ventana_chat.add(contenedor_areachat, BorderLayout.NORTH);
 		ventana_chat.add(contenedor_btntxt, BorderLayout.CENTER);
-		ventana_chat.add(contenedor_btnNick, BorderLayout.SOUTH);
+		ventana_chat.add(contenedor_btnConnect, BorderLayout.SOUTH);
 		ventana_chat.setSize(500, 500);
 		ventana_chat.setVisible(true);
 		ventana_chat.setResizable(false);
 		ventana_chat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		changeNick();
+		conectar();
 		
 		
 	}
 	
-	/*public void iniciar(){
-		
-		// Dirección IP del servidor
-		try{
-			   dirServidor = InetAddress.getByName(args[0]); // Obtener la dirección del servidor dada en forma de parámetro
-			}catch(UnknownHostException e){
-			       System.out.println(e.getMessage());
-			       System.exit(1);
-			}	
-			
-		//Socket para comunicación con servidor	
-		try{
-			     yo = new DatagramSocket();
-			}catch(SocketException e){
-			     System.out.println(e.getMessage());
-			     System.exit(1);
-			}
-		
-	}*/
 	
 	//leer mensajes que llegan
 	/*public void leer(){
@@ -144,10 +126,10 @@ public class ClienteMontse {
 		leer_hilo.start(); //para ponerse a leer	
 	}*/
 	
-	public void changeNick()
+	public void conectar()
 	{
 		
-		btn_change.addActionListener(new ActionListener()
+		btn_conectar.addActionListener(new ActionListener()
 		{
 			
 			public void actionPerformed(ActionEvent e)
@@ -165,7 +147,7 @@ public class ClienteMontse {
 		});
 	}
 	
-	/*public void escribir(){
+	public void escribir(){
 
 				try{
 
@@ -178,10 +160,10 @@ public class ClienteMontse {
 							//si el mensaje no es un direct message 
 							if(txt_ip_dm.getText() == null && txt_ip_dm.getText() == ""){
 								
+								
 								String text = txt_mensaje.getText();
-								String mensaje = appendNickname()
-								escritor.println(enviar_mensaje);
 								txt_mensaje.setText("");
+								paquete = new DatagramPacket(buffer, buffer.length, dirServidor, PUERTO);
 							}
 						}
 					});
@@ -190,7 +172,7 @@ public class ClienteMontse {
 					e.printStackTrace();
 				}
 		
-	}*/
+	}
   
 
 	String appendNickname(String nick, String message){
