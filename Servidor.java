@@ -94,19 +94,18 @@ public class Servidor{
       long test = System.currentTimeMillis();
 
       if(test >= (check.getPastTime() + 120*1000)) { //multiply by 1000 to get milliseconds
-          check.setStatus(false);
-          String fin = "Inactividad. Cierra el chat y vuelve a conectarte.";
-          finB = new byte [100];
-          finB = fin.getBytes();
-          paquete = new DatagramPacket(finB, finB.length, check.getDir(), check.getPuerto());
-          try{
-            yo.send(paquete);
-            System.out.println("inactividad de usuario ");
-          }catch(IOException e){
-            System.out.println(e.getMessage());
-            System.exit(1);
-          }
-
+        check.setStatus(false);
+        String fin = "Inactividad. Cierra el chat y vuelve a conectarte.";
+        finB = new byte [100];
+        finB = fin.getBytes();
+        paquete = new DatagramPacket(finB, finB.length, check.getDir(), check.getPuerto());
+        try{
+          yo.send(paquete);
+          System.out.println("inactividad de usuario ");
+        }catch(IOException e){
+          System.out.println(e.getMessage());
+          System.exit(1);
+        }
       }
     }
   }
@@ -275,15 +274,6 @@ public class Servidor{
 
           //un for para enviar paquete a todos los usuarios conectados
           sendMessage(yo, aMandar.trim(), getNickname(aMandar));
-        }
-
-        Clientes sender;
-        for(int i = 0; i < usuarios.size(); i++){
-          sender = usuarios.get(i);
-          if((sender.getNickname().matches(getNickname(mandar)) && sender.getStatus()) || (sender.getNickname().matches(getNickname(aMandar)) && sender.getStatus()))
-          {
-            sender.setTime(System.currentTimeMillis());
-          }
         }
 
       }
