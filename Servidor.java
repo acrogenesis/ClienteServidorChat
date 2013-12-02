@@ -60,6 +60,47 @@ class Clientes{
   }
 }
 
+class CheckActive implements Runnable{
+  DatagramSocket serverDS;
+
+
+  CheckActive(DatagramSocket yo){
+    this.serverDS = yo;
+  }
+  void checar(){
+    byte[] finB;
+    finB = new byte[100];
+    DatagramPacket paquete;
+    for(int i = 0; i < Servidor.usuarios.size(); i++){
+      Clientes check = Servidor.usuarios.get(i);
+      long test = System.currentTimeMillis();
+
+      if(test >= (check.getPastTime() + 20*1000)) { //multiply by 1000 to get milliseconds
+        check.setStatus(false);
+        String fin = "Inactividad. El chat cerrar. Vuelve a conectarte.";
+        finB = new byte [100];
+        finB = fin.getBytes();
+        paquete = new DatagramPacket(finB, finB.length, check.getDir(), check.getPuerto());
+        try{
+          serverDS.send(paquete);
+          System.out.println("inactividad de usuario ");
+          Servidor.usuarios.remove(i);
+        }catch(IOException e){
+          System.out.println(e.getMessage());
+          System.exit(1);
+        }
+      }
+    }
+  }
+  public void run(){
+    while(true){
+      checar();
+      System.out.print("");
+    }
+  }
+
+}
+
 public class Servidor{
 
   public static ArrayList<Clientes> usuarios = new ArrayList<Clientes>();
@@ -84,31 +125,6 @@ public class Servidor{
     return nickname;
   }
 
-  public static void checkActivo(DatagramSocket yo){
-
-    byte[] finB;
-    finB = new byte[100];
-    DatagramPacket paquete;
-    for(int i = 0; i < usuarios.size(); i++){
-      Clientes check = usuarios.get(i);
-      long test = System.currentTimeMillis();
-
-      if(test >= (check.getPastTime() + 120*1000)) { //multiply by 1000 to get milliseconds
-        check.setStatus(false);
-        String fin = "Inactividad. Cierra el chat y vuelve a conectarte.";
-        finB = new byte [100];
-        finB = fin.getBytes();
-        paquete = new DatagramPacket(finB, finB.length, check.getDir(), check.getPuerto());
-        try{
-          yo.send(paquete);
-          System.out.println("inactividad de usuario ");
-        }catch(IOException e){
-          System.out.println(e.getMessage());
-          System.exit(1);
-        }
-      }
-    }
-  }
 
   public static void sendPrivateMessage(DatagramSocket yo, String aMandar, String aQuien)
   {
@@ -193,6 +209,8 @@ public class Servidor{
     System.out.println("Socket escuchando en el puerto "+PUERTO); 
     boolean first = true;
     boolean esta = false;
+    CheckActive chckac = new CheckActive(yo);
+    new Thread (chckac).start();
     while(true){
       //reiniciar variable viejo
       buffer = new byte[100]; // Crear el buffer para almacenar el string recibido como arreglo de bytes
@@ -209,6 +227,9 @@ public class Servidor{
       dirCliente = paquete.getAddress();// Obtener la dirección del cliente
       puertoCliente = paquete.getPort(); // Obtener el puerto del cliente
       System.out.println(recibido);
+
+
+      System.out.println("hola");
       //checar si es paquete de registro
       if(recibido.startsWith(".registrar")){
 

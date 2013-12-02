@@ -23,7 +23,7 @@ public class Cliente {
 
   //enviar mensaje
   static JButton btn_enviar = null;
-	static JButton btn_privado = null;
+  static JButton btn_privado = null;
   static JTextField txt_mensaje = null;
   static JTextField txt_ip_dm = null;
   JPanel contenedor_btntxt= null;
@@ -49,13 +49,13 @@ public class Cliente {
     //JFRAME
     ventana_chat = new JFrame("Chat");
 
-    //conectar 
+    //conectar
     btn_conectar = new JButton("Conectar");
-	btn_privado = new JButton("Mensaje Privado");
+    btn_privado = new JButton("Mensaje Privado");
     contenedor_btnConnect = new JPanel();
     contenedor_btnConnect.setLayout(new GridLayout(1,2));
     contenedor_btnConnect.add(btn_privado);
-	contenedor_btnConnect.add(btn_conectar);
+    contenedor_btnConnect.add(btn_conectar);
 
 
 
@@ -109,41 +109,41 @@ public class Cliente {
   }
 
   public static void enviarMensajeServidor(){
-         if(txt_mensaje.getText() != ""){
-        String enviar = txt_mensaje.getText();
-        String message = nickname+"π"+enviar;
-        byte[] bufferSend = new byte[100];
-        bufferSend = message.getBytes();
-        DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
+    if(txt_mensaje.getText() != ""){
+      String enviar = txt_mensaje.getText();
+      String message = nickname+"π"+enviar;
+      byte[] bufferSend = new byte[100];
+      bufferSend = message.getBytes();
+      DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);;
 
-        try{
-          yo.send(paq);
-        }catch(IOException ex){
-          System.out.println(ex.getMessage());
-          System.exit(1);
-        }
-        }
+      try{
+        yo.send(paq);
+      }catch(IOException ex){
+        System.out.println(ex.getMessage());
+        System.exit(1);
+      }
+    }
   }
 
  public static void enviarMensajePrivado(){
-	
-	String enviar = txt_mensaje.getText();
-	String message = nickname+"π"+enviar;
-	String _aQuien = txt_ip_dm.getText();
-	String todo = ".dm "+ _aQuien + " " + message;
-	
-	System.out.println(todo);
-	byte[] bufferSend = new byte[100];
-	bufferSend = todo.getBytes();
-	DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);
-	System.out.println(new String(paq.getData()));
 
-	        try{
-	          yo.send(paq);
-	        }catch(IOException ex){
-	          System.out.println(ex.getMessage());
-	          System.exit(1);
-	        }
+    String enviar = txt_mensaje.getText();
+    String message = nickname+"π"+enviar;
+    String _aQuien = txt_ip_dm.getText();
+    String todo = ".dm "+ _aQuien + " " + message;
+
+    System.out.println(todo);
+    byte[] bufferSend = new byte[100];
+    bufferSend = todo.getBytes();
+    DatagramPacket paq = new DatagramPacket(bufferSend, bufferSend.length, dirServidor, PUERTO);
+    System.out.println(new String(paq.getData()));
+
+    try{
+      yo.send(paq);
+    }catch(IOException ex){
+      System.out.println(ex.getMessage());
+      System.exit(1);
+    }
 }
 
   public static void main(String[] args) {
@@ -151,8 +151,8 @@ public class Cliente {
     new Cliente();
 
     boolean connect = false;
-    //conexión con socket 
-    DatagramPacket paquete;        
+    //conexión con socket
+    DatagramPacket paquete;
     byte [] buffer;
     byte [] bufferR;
     try{
@@ -186,18 +186,18 @@ public class Cliente {
       System.exit(1);
     }
 
-	if(!wait){
-			String mensaje = ".registrar " + nickname;
-			byte[] registrarBuffer = new byte[100];
-			registrarBuffer = mensaje.getBytes();
-			DatagramPacket registrar = new DatagramPacket(registrarBuffer, registrarBuffer.length, dirServidor, PUERTO);
-			try{
-						yo.send(registrar);
-			}catch(IOException ex){
-						System.out.println(ex.getMessage());
-						System.exit(1);
-			}
-		}
+    if(!wait){
+        String mensaje = ".registrar " + nickname;
+        byte[] registrarBuffer = new byte[100];
+        registrarBuffer = mensaje.getBytes();
+        DatagramPacket registrar = new DatagramPacket(registrarBuffer, registrarBuffer.length, dirServidor, PUERTO);
+        try{
+          yo.send(registrar);
+        }catch(IOException ex){
+          System.out.println(ex.getMessage());
+          System.exit(1);
+        }
+      }
 
     String message="";
     while(true){
@@ -206,25 +206,23 @@ public class Cliente {
         btn_enviar.addActionListener(new ActionListener(){
           public void actionPerformed(ActionEvent e){
             enviarMensajeServidor();
-			
           }
         });
-		txt_mensaje.setText("");
+        txt_mensaje.setText("");
       }
-      
 
-	 if(txt_mensaje.getText().toString() != "")
-	{
-		btn_privado.addActionListener(new ActionListener(){
-		          public void actionPerformed(ActionEvent e){
-		            enviarMensajePrivado();
-					System.out.println("Mensaje Privado");
-					 
-		          }
-		  });
-		txt_mensaje.setText("");
-	}
-	
+
+      if(txt_mensaje.getText().toString() != "")
+      {
+        btn_privado.addActionListener(new ActionListener(){
+          public void actionPerformed(ActionEvent e){
+            enviarMensajePrivado();
+            System.out.println("Mensaje Privado");
+          }
+        });
+        txt_mensaje.setText("");
+      }
+
       //recibir paquete
       try{
         bufferR = new byte [100];
@@ -236,6 +234,10 @@ public class Cliente {
       {
         System.out.println(e.getMessage());
         System.exit(1);
+      }
+      if (message.startsWith("Inactividad")){
+        System.out.println(message);
+        System.exit(0);
       }
     }
   }
